@@ -208,6 +208,7 @@ export const GoLanguage: Language = {
     "bug427.json",
     "github-events.json",
     "reddit.json",
+    "recursive.json",
     "0cffa.json",
     "0e0c2.json",
     "127a1.json",

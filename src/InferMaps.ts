@@ -118,7 +118,7 @@ export function inferMaps(
                 shouldBe,
                 c.getAttributes(),
                 builder,
-                unionBuilderForUnification(builder, false, false, false, conflateNumbers),
+                unionBuilderForUnification(builder, false, false, conflateNumbers),
                 conflateNumbers
             ),
             forwardingRef
