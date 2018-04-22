@@ -4,7 +4,7 @@ import { Map, Set, OrderedSet } from "immutable";
 
 import { Type, ClassType, setOperationCasesEqual, ClassProperty } from "./Type";
 import { removeNullFromType } from "./TypeUtils";
-import { defined, panic } from "./Support";
+import { defined, panic, MultiSet, multiSetAdd } from "./Support";
 import { TypeGraph } from "./TypeGraph";
 import { TypeRef, StringTypeMapping } from "./TypeBuilder";
 import { GraphRewriteBuilder } from "./GraphRewriting";
@@ -22,7 +22,7 @@ function nameProbability(name: string): number {
     return evaluate(markovChain, name);
 }
 
-function shouldBeMap(properties: Map<string, ClassProperty>): Set<Type> | undefined {
+function shouldBeMap(properties: Map<string, ClassProperty>): MultiSet<Type> | undefined {
     // Only classes with a certain number of properties are inferred
     // as maps.
     const numProperties = properties.size;
@@ -62,7 +62,7 @@ function shouldBeMap(properties: Map<string, ClassProperty>): Set<Type> | undefi
     // 2. Some property types are null or nullable.
     // 3. No property types are null or nullable.
     let firstNonNullCases: OrderedSet<Type> | undefined = undefined;
-    let allCases: Set<Type> = Set();
+    let allCases: MultiSet<Type> = Map();
     let canBeMap = true;
     // Check that all the property types are the same, modulo nullability.
     properties.forEach(p => {
@@ -80,7 +80,7 @@ function shouldBeMap(properties: Map<string, ClassProperty>): Set<Type> | undefi
                 firstNonNullCases = nn;
             }
         }
-        allCases = allCases.add(p.type);
+        allCases = multiSetAdd(allCases, p.type);
     });
     if (!canBeMap) {
         return undefined;

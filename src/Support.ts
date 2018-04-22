@@ -1,6 +1,6 @@
 "use strict";
 
-import { Collection, List, Set, isKeyed, isIndexed } from "immutable";
+import { Collection, List, Set, Map, isKeyed, isIndexed } from "immutable";
 
 import { Base64 } from "js-base64";
 import * as pako from "pako";
@@ -212,4 +212,30 @@ export function parseJSON(text: string, description: string, address: string = "
 
         return messageError(ErrorMessage.MiscJSONParseError, { description, address, message });
     }
+}
+
+export type MultiSet<T> = Map<T, number>;
+
+export function multiSetAdd<T>(set: MultiSet<T>, item: T): MultiSet<T> {
+    return set.update(item, 0, c => c + 1);
+}
+
+export function toMultiSet<T>(c: Collection<any, T> | T[]): MultiSet<T> {
+    let ms = Map<T, number>();
+    if (Array.isArray(c)) {
+        for (const item of c) {
+            ms = multiSetAdd(ms, item);
+        }
+    } else {
+        c.forEach(item => (ms = multiSetAdd(ms, item)));
+    }
+    return ms;
+}
+
+export function multiSetUnion<T>(...sets: MultiSet<T>[]): MultiSet<T> {
+    return Map<T, number>().mergeWith((a, b) => a + b, ...sets);
+}
+
+export function multiSetToArray<T>(set: MultiSet<T>): T[] {
+    return set.keySeq().toArray();
 }
